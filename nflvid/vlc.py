@@ -79,13 +79,13 @@ does not have data on where plays end.
 # list format to inject meta data for each play. See the `xspf_track`
 # template for the details.
 
-from __future__ import absolute_import, division, print_function
+
 import os
 import os.path
 import re
 import subprocess
 import tempfile
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import xml.sax.saxutils
 
 import nfldb
@@ -190,7 +190,7 @@ def make_xspf(db, play_paths):
     `nfldb.connect`. It is used to build meta data for games.
     """
     def path_encode(p):
-        p = urllib.pathname2url(os.path.realpath(p))
+        p = urllib.request.pathname2url(os.path.realpath(p))
         if not p.startswith('/'):
             p = '/' + p
         return p

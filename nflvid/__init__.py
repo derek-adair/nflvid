@@ -26,16 +26,14 @@ import sys
 import tempfile
 import threading
 import time
-import urllib2
-
-import httplib2
+import urllib.request, urllib.error, urllib.parse
 
 import bs4
 
-from nflgame import OrderedDict
+from collections import OrderedDict 
 
 try:
-    strtype = basestring
+    strtype = str
 except NameError:  # I have lofty hopes for Python 3.
     strtype = str
 
@@ -75,7 +73,7 @@ _broadcast_urls = {
 
 
 def _eprint(s):
-    print >> sys.stderr, s
+    print(s, file=sys.stderr)
 
 
 def broadcast_urls(gobj, quality='1600', condensed=False):
@@ -123,7 +121,7 @@ def url_status(url):
     `200`.
     """
     try:
-        resp, _ = httplib2.Http(timeout=10).request(url, 'HEAD')
+        resp, _ = urllib.Http(timeout=10).request(url, 'HEAD')
     except socket.timeout:
         return '404'
     return resp['status']
@@ -611,15 +609,15 @@ def _run_command(cmd, monitor_file=None):
             err = subprocess.CalledProcessError(p.returncode, cmd)
             err.output = output
             raise err
-    except subprocess.CalledProcessError, e:
+    except subprocess.CalledProcessError as e:
         # A hack for rtmpdump...
         if e.returncode == 2 and cmd[0] == 'rtmpdump':
             return None
-        indent = lambda s: '\n'.join(map(lambda l: '   %s' % l, s.split('\n')))
+        indent = lambda s: '\n'.join(['   %s' % l for l in s.split('\n')])
         _eprint("Could not run '%s' (exit code %d):\n%s"
                 % (' '.join(cmd), e.returncode, indent(e.output)))
         return False
-    except OSError, e:
+    except OSError as e:
         _eprint("Could not run '%s' (errno: %d): %s"
                 % (' '.join(cmd), e.errno, e.strerror))
         return False
@@ -664,7 +662,7 @@ def plays(gobj, coach=True):
     fp = _xmlf % gobj.eid
     if gobj.game_over() and not os.access(fp, os.R_OK):
         try:
-            print >> gzip.open(fp, 'w+'), rawxml,
+            print(rawxml, end=' ', file=gzip.open(fp, 'w+'))
         except IOError:
             _eprint('Could not cache XML data. Please make '
                     '"%s" writable.' % path.dirname(fp))
@@ -767,7 +765,7 @@ class PlayTime (object):
             parts = self.__point.split(':')
             if len(parts[3]) == 3:
                 self.__coach = True
-            parts = map(int, parts)
+            parts = list(map(int, parts))
         except ValueError:
             assert False, 'Bad play time format: %s' % self.__point
 
@@ -940,10 +938,10 @@ def _get_xml_data(eid=None, gamekey=None, fpath=None):
     base = _xml_base_urls.get(str(year), _xml_base_urls['default'])
     u = base % (year, gamekey)  # The year and the game key.
     try:
-        return urllib2.urlopen(u, timeout=10).read()
-    except urllib2.HTTPError, e:
+        return urllib.request.urlopen(u, timeout=10).read()
+    except urllib.error.HTTPError as e:
         _eprint('%s (%s)' % (e, u))
-    except socket.timeout, e:
+    except socket.timeout as e:
         _eprint('%s (%s)' % (e, u))
     return None
 
