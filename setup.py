@@ -3,7 +3,7 @@ from distutils.core import setup
 import os.path as path
 
 install_requires = ['httplib2', 'beautifulsoup4',
-                    'nflgame>=1.2.1', 'nfldb>=0.1.0']
+                    'nflgame-redux>=2.0.5', 'nfldb-redux']
 try:
     import argparse
 except ImportError:
@@ -36,8 +36,8 @@ setup(
         'Intended Audience :: End Users/Desktop',
         'Intended Audience :: Other Audience',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.5',
         'Topic :: Database',
     ],
     platforms='ANY',

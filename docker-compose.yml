@@ -1,0 +1,16 @@
+version: "3.2"
+services:
+    postgres:
+        image: postgres
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+    nflvid:
+        container_name: 'nflvid'
+        build:
+           context: .
+        depends_on:
+            - postgres
+        volumes:
+            - "./:/code"
+        command: python
